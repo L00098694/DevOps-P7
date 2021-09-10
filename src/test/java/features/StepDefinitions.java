@@ -5,13 +5,11 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.Assert;
-import revolut.PaymentService;
-import revolut.Person;
+import revolut.*;
 
 public class StepDefinitions {
 
     private double topUpAmount;
-    //private String topUpMethod;
     PaymentService topUpMethod;
     Person danny;
 
@@ -44,11 +42,16 @@ public class StepDefinitions {
         topUpMethod = topUpSource;
     }
 
+    @Given("Danny has {} euro available in his {paymentService}")
+    public void danny_has_euro_available_in_his_topUp_method(double euro, PaymentService topUpSource) {
+        topUpMethod.setAvailableBalance(euro);
+    }
+
     @When("Danny tops up")
     public void danny_tops_up() {
         // Write code here that turns the phrase above into concrete actions
-        danny.getAccount("EUR").addFunds(topUpAmount);
-        //throw new io.cucumber.java.PendingException();
+        Account dannysAccount = danny.getAccount("EUR");
+        topUpMethod.withdraw(dannysAccount, topUpAmount);
     }
 
     @Then("The new balance of his euro account should now be {double}")
