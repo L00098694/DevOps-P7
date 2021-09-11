@@ -7,18 +7,18 @@ Feature: TopUp Account
     Given Danny has 10 euro in his euro Revolut account
     And Danny selects 100 euro as the topUp amount
     And  Danny selects his DebitCard as his topUp method
-    And Danny has 100 euro available in his DebitCard
+    And Danny has 100 euro available in his topUp method
     When Danny tops up
-    Then The new balance of his euro account should now be 110
+    Then Danny should now have 110 euro in his euro Revolut account
 
 
   Scenario: Add money to Revolut account using bank account
     Given Danny has 20 euro in his euro Revolut account
     And Danny selects 230 euro as the topUp amount
     And  Danny selects his BankAccount as his topUp method
-    And Danny has 230 euro available in his BankAccount
+    And Danny has 230 euro available in his topUp method
     When Danny tops up
-    Then The new balance of his euro account should now be 250
+    Then Danny should now have 250 euro in his euro Revolut account
 
 
 
@@ -29,10 +29,10 @@ Feature: TopUp Account
   Scenario Outline: Add various amounts to Revolut account
     Given Danny has <startBalance> euro in his euro Revolut account
     And Danny selects his DebitCard as his topUp method
-    And Danny has <topUpAmount> euro available in his DebitCard
+    And Danny has <topUpAmount> euro available in his topUp method
     And Danny selects <topUpAmount> euro as the topUp amount
     When Danny tops up
-    Then The new balance of his euro account should now be <newBalance>
+    Then Danny should now have <newBalance> euro in his euro Revolut account
     Examples:
       | startBalance| topUpAmount | newBalance  |
       | 0           | 100         | 100         |
@@ -45,15 +45,15 @@ Feature: TopUp Account
     Scenario: Payment service rejects the request
       Given Danny has 0 euro in his euro Revolut account
       And Danny selects his BankAccount as his topUp method
-      And Danny has 0 euro available in his BankAccount
+      And Danny has 0 euro available in his topUp method
       And Danny selects 1000 euro as the topUp amount
       When Danny tops up
-      Then The new balance of his euro account should now be 0
+      Then Danny should now have 0 euro in his euro Revolut account
 
     Scenario: Payment service accepts the request
       Given Danny has 0 euro in his euro Revolut account
       And Danny selects his BankAccount as his topUp method
-      And Danny has 9999 euro available in his BankAccount
+      And Danny has 9999 euro available in his topUp method
       And Danny selects 1000 euro as the topUp amount
       When Danny tops up
-      Then The new balance of his euro account should now be 1000
+      Then Danny should now have 1000 euro in his euro Revolut account

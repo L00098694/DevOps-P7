@@ -1,6 +1,7 @@
 package features;
 
 import io.cucumber.java.Before;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -10,40 +11,50 @@ import revolut.*;
 public class StepDefinitions {
 
     private double topUpAmount;
+    private double transferAmount;
+
     PaymentService topUpMethod;
+
+    // Test users
     Person danny;
+    Person bob;
 
     @Before//Before hooks run before the first step in each scenario
     public void setUp(){
         //We can use this to setup test data for each scenario
         danny = new Person("Danny");
+        bob = new Person("Bob");
     }
+
     @Given("Danny has {double} euro in his euro Revolut account")
     public void dannyHasEuroInHisEuroRevolutAccount(double startingBalance) {
-        //System.out.println("Danny has starting account balance of: " + String.valueOf(startingBalance));
         danny.setAccountBalance(startingBalance);
-        //double newAccountBalance = danny.getAccountBalance("EUR");
-        //System.out.println("Danny's new account balance if: " + String.valueOf(newAccountBalance));
+    }
+
+    @And("Bob has {double} euro in his euro Revolut account")
+    public void bobHasEuroInHisEuroRevolutAccount(double startingBalance) {
+        bob.setAccountBalance(startingBalance);
     }
 
     @Given("Danny selects {double} euro as the topUp amount")
     public void danny_selects_euro_as_the_top_up_amount(double topUpAmount) {
-        // Write code here that turns the phrase above into concrete actions
         this.topUpAmount = topUpAmount;
-        //throw new io.cucumber.java.PendingException();
     }
 
-    //@Given("Danny selects his {word} as his topUp method")
+    @And("Danny selects {double} euro as the transfer amount")
+    public void dannySelectsEuroAsTheTransferAmount(double transferAmount) {
+        this.transferAmount = transferAmount;
+    }
+
     @Given("Danny selects his {paymentService} as his topUp method")
-    //public void danny_selects_his_debit_card_as_his_top_up_method(String topUpSource) {
     public void danny_selects_his_debit_card_as_his_top_up_method(PaymentService topUpSource) {
         // Write code here that turns the phrase above into concrete actions
         System.out.println("The selected payment service type was " + topUpSource.getType());
         topUpMethod = topUpSource;
     }
 
-    @Given("Danny has {} euro available in his {paymentService}")
-    public void danny_has_euro_available_in_his_topUp_method(double euro, PaymentService topUpSource) {
+    @Given("Danny has {} euro available in his topUp method")
+    public void danny_has_euro_available_in_his_topUp_method(double euro) {
         topUpMethod.setAvailableBalance(euro);
     }
 
@@ -54,14 +65,31 @@ public class StepDefinitions {
         topUpMethod.withdraw(dannysAccount, topUpAmount);
     }
 
-    @Then("The new balance of his euro account should now be {double}")
-    public void the_new_balance_of_his_euro_account_should_now_be(double newBalance) {
+    @When("Danny transfers to Bob")
+    public void dannyTransfersToBob() {
         // Write code here that turns the phrase above into concrete actions
-        //throw new io.cucumber.java.PendingException();
+        Account dannysAccount = danny.getAccount("EUR");
+        Account bobsAccount = bob.getAccount("EUR");
+        dannysAccount.transfer(transferAmount, bobsAccount);
+    }
+
+    @Then("Danny should now have {double} euro in his euro Revolut account")
+    public void dannyShouldNowHaveEuroInHisEuroRevolutAccount(double newBalance) {
         //Arrange
         double expectedResult = newBalance;
         //Act
         double actualResult = danny.getAccount("EUR").getBalance();
+        //Assert
+        Assert.assertEquals(expectedResult, actualResult,0);
+        System.out.println("The new final balance is: " + actualResult);
+    }
+
+    @And("Bob should now have {double} euro in his euro Revolut account")
+    public void bobShouldNowHaveEuroInHisEuroRevolutAccount(double newBalance) {
+        //Arrange
+        double expectedResult = newBalance;
+        //Act
+        double actualResult = bob.getAccount("EUR").getBalance();
         //Assert
         Assert.assertEquals(expectedResult, actualResult,0);
         System.out.println("The new final balance is: " + actualResult);
