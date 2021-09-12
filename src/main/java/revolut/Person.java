@@ -10,7 +10,7 @@ public class Person {
     // EUR 30
     // USD 50
     // STG 30
-    private HashMap<String, Account> userAccounts = new HashMap<String, Account>();
+    private HashMap<String, Account> userAccounts = new HashMap<>();
 
     public Person(String name){
         this.name = name;

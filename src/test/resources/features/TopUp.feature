@@ -24,8 +24,6 @@ Feature: TopUp Account
 
   #ToDo implement the remaining scenarios listed below
 
-  #To implement this scenario you will need to use data tables
-    # https://cucumber.io/docs/cucumber/api/
   Scenario Outline: Add various amounts to Revolut account
     Given Danny has <startBalance> euro in his euro Revolut account
     And Danny selects his DebitCard as his topUp method
@@ -41,7 +39,6 @@ Feature: TopUp Account
 
   Rule: The account balance shouldn't change if the topup payment request is rejected by the payment service
 
-    #The scenarios below will need a payment service that accepts or rejects a request to add funds
     Scenario: Payment service rejects the request
       Given Danny has 0 euro in his euro Revolut account
       And Danny selects his BankAccount as his topUp method
@@ -50,10 +47,3 @@ Feature: TopUp Account
       When Danny tops up
       Then Danny should now have 0 euro in his euro Revolut account
 
-    Scenario: Payment service accepts the request
-      Given Danny has 0 euro in his euro Revolut account
-      And Danny selects his BankAccount as his topUp method
-      And Danny has 9999 euro available in his topUp method
-      And Danny selects 1000 euro as the topUp amount
-      When Danny tops up
-      Then Danny should now have 1000 euro in his euro Revolut account

@@ -1,5 +1,6 @@
 package features;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -7,6 +8,9 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.Assert;
 import revolut.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class StepDefinitions {
 
@@ -16,82 +20,85 @@ public class StepDefinitions {
     PaymentService topUpMethod;
 
     // Test users
-    Person danny;
-    Person bob;
+    HashMap<String, Person> people = new HashMap<>();
 
     @Before//Before hooks run before the first step in each scenario
     public void setUp(){
         //We can use this to setup test data for each scenario
-        danny = new Person("Danny");
-        bob = new Person("Bob");
+        Person danny = new Person("Danny");
+        Person bob = new Person("Bob");
+
+        this.people.put("Danny", danny);
+        this.people.put("Bob", bob);
     }
 
-    @Given("Danny has {double} euro in his euro Revolut account")
-    public void dannyHasEuroInHisEuroRevolutAccount(double startingBalance) {
-        danny.setAccountBalance(startingBalance);
+    @Given("{word} has {double} euro in his/her/their euro Revolut account")
+    public void dannyHasEuroInHisEuroRevolutAccount(String name, double startingBalance) {
+        Person person = this.people.get(name);
+        person.setAccountBalance(startingBalance);
     }
 
-    @And("Bob has {double} euro in his euro Revolut account")
-    public void bobHasEuroInHisEuroRevolutAccount(double startingBalance) {
-        bob.setAccountBalance(startingBalance);
-    }
-
-    @Given("Danny selects {double} euro as the topUp amount")
-    public void danny_selects_euro_as_the_top_up_amount(double topUpAmount) {
+    @Given("{word} selects {double} euro as the topUp amount")
+    public void danny_selects_euro_as_the_top_up_amount(String name, double topUpAmount) {
+        System.out.println(name + " has selected " + topUpAmount + " euro as the top-up amount.");
         this.topUpAmount = topUpAmount;
     }
 
-    @And("Danny selects {double} euro as the transfer amount")
-    public void dannySelectsEuroAsTheTransferAmount(double transferAmount) {
+    @And("{word} selects {double} euro as the transfer amount")
+    public void dannySelectsEuroAsTheTransferAmount(String name, double transferAmount) {
+        System.out.println(name + " has selected " + transferAmount + " euro as the transfer amount.");
         this.transferAmount = transferAmount;
     }
 
-    @Given("Danny selects his {paymentService} as his topUp method")
-    public void danny_selects_his_debit_card_as_his_top_up_method(PaymentService topUpSource) {
-        // Write code here that turns the phrase above into concrete actions
-        System.out.println("The selected payment service type was " + topUpSource.getType());
+    @Given("{word} selects his/her/their {paymentService} as his/her/their topUp method")
+    public void danny_selects_his_debit_card_as_his_top_up_method(String name, PaymentService topUpSource) {
+        System.out.println(name + " selected payment type: " + topUpSource.getType());
         topUpMethod = topUpSource;
     }
 
-    @Given("Danny has {} euro available in his topUp method")
-    public void danny_has_euro_available_in_his_topUp_method(double euro) {
+    @Given("{word} has {} euro available in his/her/their topUp method")
+    public void danny_has_euro_available_in_his_topUp_method(String name, double euro) {
+        System.out.println(name + "'s available " + topUpMethod.getType() + " balance is: " + euro + " euro.");
         topUpMethod.setAvailableBalance(euro);
     }
 
-    @When("Danny tops up")
-    public void danny_tops_up() {
+    @When("{word} tops up")
+    public void danny_tops_up(String name) {
         // Write code here that turns the phrase above into concrete actions
-        Account dannysAccount = danny.getAccount("EUR");
-        topUpMethod.withdraw(dannysAccount, topUpAmount);
+        Person person = this.people.get(name);
+        Account personsAccount = person.getAccount("EUR");
+        topUpMethod.withdraw(personsAccount, topUpAmount);
     }
 
-    @When("Danny transfers to Bob")
-    public void dannyTransfersToBob() {
+    @When("{word} transfers to {word}")
+    public void dannyTransfersToBob(String sourceName, String targetName) {
         // Write code here that turns the phrase above into concrete actions
-        Account dannysAccount = danny.getAccount("EUR");
-        Account bobsAccount = bob.getAccount("EUR");
-        dannysAccount.transfer(transferAmount, bobsAccount);
+        Account sourceAccount = this.people.get(sourceName).getAccount("EUR");
+        Account targetAccount = this.people.get(targetName).getAccount("EUR");
+        sourceAccount.transfer(transferAmount, targetAccount);
     }
 
-    @Then("Danny should now have {double} euro in his euro Revolut account")
-    public void dannyShouldNowHaveEuroInHisEuroRevolutAccount(double newBalance) {
+    @Then("{word} should now have {double} euro in his/her/their euro Revolut account")
+    public void dannyShouldNowHaveEuroInHisEuroRevolutAccount(String name, double newBalance) {
         //Arrange
         double expectedResult = newBalance;
         //Act
-        double actualResult = danny.getAccount("EUR").getBalance();
+        double actualResult = this.people.get(name).getAccount("EUR").getBalance();
         //Assert
         Assert.assertEquals(expectedResult, actualResult,0);
         System.out.println("The new final balance is: " + actualResult);
     }
 
-    @And("Bob should now have {double} euro in his euro Revolut account")
-    public void bobShouldNowHaveEuroInHisEuroRevolutAccount(double newBalance) {
-        //Arrange
-        double expectedResult = newBalance;
-        //Act
-        double actualResult = bob.getAccount("EUR").getBalance();
-        //Assert
-        Assert.assertEquals(expectedResult, actualResult,0);
-        System.out.println("The new final balance is: " + actualResult);
+    @Given("the following users")
+    public void theFollowingUsers(DataTable dataTable) {
+        for (Map<String, String> personData: dataTable.asMaps()) {
+            String name = personData.get("name");
+            double startBalance = Double.parseDouble(personData.get("balance"));
+
+            Person person = new Person(name);
+            person.setAccountBalance(startBalance);
+
+            this.people.put(name, person);
+        }
     }
 }
