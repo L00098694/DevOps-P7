@@ -33,37 +33,37 @@ public class StepDefinitions {
     }
 
     @Given("{word} has {double} euro in his/her/their euro Revolut account")
-    public void dannyHasEuroInHisEuroRevolutAccount(String name, double startingBalance) {
+    public void person_has_n_euro_in_their_euro_account(String name, double startingBalance) {
         Person person = this.people.get(name);
         person.setAccountBalance(startingBalance);
     }
 
     @Given("{word} selects {double} euro as the topUp amount")
-    public void danny_selects_euro_as_the_top_up_amount(String name, double topUpAmount) {
+    public void person_selects_n_euro_as_the_top_up_amount(String name, double topUpAmount) {
         System.out.println(name + " has selected " + topUpAmount + " euro as the top-up amount.");
         this.topUpAmount = topUpAmount;
     }
 
     @And("{word} selects {double} euro as the transfer amount")
-    public void dannySelectsEuroAsTheTransferAmount(String name, double transferAmount) {
+    public void person_selects_n_euro_as_the_transfer_amount(String name, double transferAmount) {
         System.out.println(name + " has selected " + transferAmount + " euro as the transfer amount.");
         this.transferAmount = transferAmount;
     }
 
     @Given("{word} selects his/her/their {paymentService} as his/her/their topUp method")
-    public void danny_selects_his_debit_card_as_his_top_up_method(String name, PaymentService topUpSource) {
+    public void person_selects_paymentService_as_their_top_up_method(String name, PaymentService topUpSource) {
         System.out.println(name + " selected payment type: " + topUpSource.getType());
         topUpMethod = topUpSource;
     }
 
     @Given("{word} has {} euro available in his/her/their topUp method")
-    public void danny_has_euro_available_in_his_topUp_method(String name, double euro) {
+    public void person_has_n_euro_available_in_their_topUp_method(String name, double euro) {
         System.out.println(name + "'s available " + topUpMethod.getType() + " balance is: " + euro + " euro.");
         topUpMethod.setAvailableBalance(euro);
     }
 
     @When("{word} tops up")
-    public void danny_tops_up(String name) {
+    public void person_tops_up(String name) {
         // Write code here that turns the phrase above into concrete actions
         Person person = this.people.get(name);
         Account personsAccount = person.getAccount("EUR");
@@ -71,7 +71,7 @@ public class StepDefinitions {
     }
 
     @When("{word} transfers to {word}")
-    public void dannyTransfersToBob(String sourceName, String targetName) {
+    public void sourcePerson_transfers_to_targetPerson(String sourceName, String targetName) {
         // Write code here that turns the phrase above into concrete actions
         Account sourceAccount = this.people.get(sourceName).getAccount("EUR");
         Account targetAccount = this.people.get(targetName).getAccount("EUR");
@@ -79,7 +79,7 @@ public class StepDefinitions {
     }
 
     @Then("{word} should now have {double} euro in his/her/their euro Revolut account")
-    public void dannyShouldNowHaveEuroInHisEuroRevolutAccount(String name, double newBalance) {
+    public void person_should_now_have_n_euro_in_their_account(String name, double newBalance) {
         //Arrange
         double expectedResult = newBalance;
         //Act
@@ -90,7 +90,7 @@ public class StepDefinitions {
     }
 
     @Given("the following users")
-    public void theFollowingUsers(DataTable dataTable) {
+    public void the_following_users(DataTable dataTable) {
         for (Map<String, String> personData: dataTable.asMaps()) {
             String name = personData.get("name");
             double startBalance = Double.parseDouble(personData.get("balance"));
