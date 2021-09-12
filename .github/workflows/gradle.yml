@@ -3,7 +3,7 @@ name: Build and Test Java Gradle app
 on: [push]
 
 jobs:
-  build:
+  buildAndTest:
     runs-on: ubuntu-latest
     steps:
       - name: Setup JDK 16
@@ -18,8 +18,5 @@ jobs:
       - name: Make the Gradle wrapper script executable
         run: chmod +x ./gradlew
         
-      - name: Run a build
+      - name: Run a build and test
         run: ./gradlew build
-
-      - name: Run the tests
-        run: ./gradlew test
